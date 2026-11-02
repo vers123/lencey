@@ -22,5 +22,12 @@ add_executable(test_utils test/test_utils.c src/utils/utils.c)
 target_include_directories(test_utils PRIVATE src include)   # ← 同样加 src
 add_test(NAME test_utils COMMAND test_utils)
 
+# Debug 构建挂 sanitizer：抓越界、悬空指针、整数溢出、UB
+foreach(tgt lencey test_utils)
+    target_compile_options(${tgt} PRIVATE
+        -fsanitize=address,undefined -fno-omit-frame-pointer)
+    target_link_options(${tgt} PRIVATE -fsanitize=address,undefined)
+endforeach()
+
 set_target_properties(test_utils PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test_bin)
